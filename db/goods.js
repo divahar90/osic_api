@@ -55,5 +55,16 @@ module.exports = {
                 db.close();
             });
         });
+    },
+    getTopPosted: function (req, callback) {
+        mongoClient.connect(url, function (err, db) {
+            db.collection("goods").aggregate([{ $match: { "location": req.params.location } }, { $group: { _id: "$name", count: { $sum: 1 } } }], function (err, result) {
+                if (err) throw err;
+                else {
+                    callback(result)
+                }
+                db.close();
+            });
+        });
     }
 }

@@ -16,8 +16,15 @@ router.get('/', function (req, res) {
     });
 });
 
+router.get('/top_posted/:location', function (req, res) {
+    goods.getTopPosted(req, (result) => {
+        res.status(200)
+            .json(result);
+    });
+});
+
 router.get('/:category', function (req, res) {
-    services.getGoodsByCategory(req, (result) => {
+    goods.getGoodsByCategory(req, (result) => {
         res.status(200)
             .json(result);
     });

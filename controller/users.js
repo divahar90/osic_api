@@ -9,6 +9,13 @@ router.get('/:userName', function (req, res) {
     });
 });
 
+router.get('/', function (req, res) {
+    users.getTopUsers(req, (result) => {
+        res.status(200)
+            .json(result);
+    });
+});
+
 router.put('/:userName', function (req, res) {
     users.updateReviewsAndRatings(req, (result) => {
         res.status(200)
