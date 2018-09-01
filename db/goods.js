@@ -24,7 +24,7 @@ module.exports = {
 
     getGoods: function (req, callback) {
         mongoClient.connect(url, function (err, db) {
-            db.collection("goods").find({}).toArray(function (err, result) {
+            db.collection("goods").find({ $and: [{ postedBy: { $ne: req.params.excludeUser } }, { status: 'available' }] }).toArray(function (err, result) {
                 if (err) {
                     callback({
                         status: 'Fail',
@@ -47,7 +47,18 @@ module.exports = {
     },
     getGoodsByCategory: function (req, callback) {
         mongoClient.connect(url, function (err, db) {
-            db.collection("goods").findAll({ "category": req.params.category }).toArray(function (err, result) {
+            db.collection("goods").findAll({ $and: [{ category: req.params.category }, { postedBy: { $ne: req.params.excludeUser } }, { status: 'available' }] }).toArray(function (err, result) {
+                if (err) throw err;
+                else {
+                    callback(result)
+                }
+                db.close();
+            });
+        });
+    },
+    getTopPostedByKampong: function (req, callback) {
+        mongoClient.connect(url, function (err, db) {
+            db.collection("goods").aggregate([{ $match: { "location": req.params.location } }, { $group: { _id: "$name", count: { $sum: 1 } } }, { $sort: { 'count': -1 } }], function (err, result) {
                 if (err) throw err;
                 else {
                     callback(result)
@@ -58,7 +69,29 @@ module.exports = {
     },
     getTopPosted: function (req, callback) {
         mongoClient.connect(url, function (err, db) {
-            db.collection("goods").aggregate([{ $match: { "location": req.params.location } }, { $group: { _id: "$name", count: { $sum: 1 } } }], function (err, result) {
+            db.collection("goods").aggregate([{ $group: { _id: "$location", count: { $sum: 1 } } }, { $sort: { 'count': -1 } }], function (err, result) {
+                if (err) throw err;
+                else {
+                    callback(result)
+                }
+                db.close();
+            });
+        });
+    },
+    getTopCategoryPosted: function (req, callback) {
+        mongoClient.connect(url, function (err, db) {
+            db.collection("goods").aggregate([{ $match: { $and: [{ "location": req.params.location }, { "type": 'giveaway' }] } }, { $group: { _id: "$category", count: { $sum: 1 } } }, { $sort: { 'count': -1 } }], function (err, result) {
+                if (err) throw err;
+                else {
+                    callback(result)
+                }
+                db.close();
+            });
+        });
+    },
+    getTopCategoryRequested: function (req, callback) {
+        mongoClient.connect(url, function (err, db) {
+            db.collection("goods").aggregate([{ $match: { $and: [{ "location": req.params.location }, { "type": 'requested' }] } }, { $group: { _id: "$category", count: { $sum: 1 } } }, { $sort: { 'count': -1 } }], function (err, result) {
                 if (err) throw err;
                 else {
                     callback(result)
