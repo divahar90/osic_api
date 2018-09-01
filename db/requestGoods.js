@@ -2,38 +2,34 @@ var mongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/osic";
 
 module.exports = {
-    postGoods: function (req, callback) {
+    requestGoods: function (req, callback) {
         mongoClient.connect(url, function (err, db) {
-            db.collection("goods").insertOne(req.body, function (err, result) {
+            db.collection("request_goods").insertOne(req.body, function (err, result) {
                 if (err) {
-                    if (err.code == 11000) {
-                        callback({
-                            status: 'Fail',
-                            message: 'Posting Goods failed'
-                        });
-                    } else
-                        throw err;
-                    db.close();
-                } else {
+                    callback({
+                        status: 'Fail',
+                        message: 'Posting Goods failed'
+                    });
+                }
+                else {
                     callback({
                         status: 'Success',
                         message: 'Posting Goods succeeded'
                     });
-                    db.close();
                 }
+                db.close();
             });
         });
     },
 
-    getGoods: function (req, callback) {
+    getRequestedGoods: function (req, callback) {
         mongoClient.connect(url, function (err, db) {
-            db.collection("goods").find({}).toArray(function (err, result) {
+            db.collection("request_goods").find({}).toArray(function (err, result) {
                 if (err) {
                     callback({
                         status: 'Fail',
                         message: 'Getting Goods failed'
                     });
-                    db.close();
                 } else {
                     if (result.length > 0) {
                         callback(result);
@@ -46,6 +42,17 @@ module.exports = {
                     }
                     db.close();
                 }
+            });
+        });
+    },
+    getRequestedGoodsByCategory: function (req, callback) {
+        mongoClient.connect(url, function (err, db) {
+            db.collection("request_goods").findAll({ "category": req.params.category }).toArray(function (err, result) {
+                if (err) throw err;
+                else {
+                    callback(result)
+                }
+                db.close();
             });
         });
     }

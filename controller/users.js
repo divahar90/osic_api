@@ -1,16 +1,16 @@
 var express = require('express');
 var router = express.Router();
-var goods = require('../model/goods');
+var users = require('../db/users');
 
-router.post('/', function (req, res) {
-    goods.postGoods(req, (result) => {
+router.get('/:userName', function (req, res) {
+    users.getUser(req, (result) => {
         res.status(200)
             .json(result);
     });
 });
 
-router.get('/', function (req, res) {
-    goods.getGoods(req, (result) => {
+router.put('/:userName', function (req, res) {
+    users.updateReviewsAndRatings(req, (result) => {
         res.status(200)
             .json(result);
     });
