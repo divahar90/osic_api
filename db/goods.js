@@ -1,4 +1,6 @@
 var mongoClient = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectID;
+
 var url = "mongodb://localhost:27017/osic";
 
 module.exports = {
@@ -95,6 +97,26 @@ module.exports = {
                 if (err) throw err;
                 else {
                     callback(result)
+                }
+                db.close();
+            });
+        });
+    },
+    updateStatus: function (req, callback) {
+        mongoClient.connect(url, function (err, db) {
+            db.collection("goods").update({ _id: ObjectId(req.params.id) }, {
+                $set: { status: "not_available" }
+            }, function (err, result) {
+                if (err) {
+                    callback({
+                        status: 'Fail',
+                        message: 'Update status of Goods failed'
+                    });
+                } else {
+                    callback({
+                        status: 'Success',
+                        message: 'Update status of Goods succeeded'
+                    });
                 }
                 db.close();
             });

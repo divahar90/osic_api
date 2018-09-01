@@ -65,12 +65,12 @@ module.exports = {
                 if (err) {
                     callback({
                         status: 'Fail',
-                        message: 'Posted review and rating failed'
+                        message: 'Posting review and rating failed'
                     });
                 } else {
                     callback({
                         status: 'Success',
-                        message: 'Posted review and rating succeeded'
+                        message: 'Posting review and rating succeeded'
                     });
                 }
                 db.close();
