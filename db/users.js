@@ -32,10 +32,12 @@ module.exports = {
     },
     updateReviewsAndRatings: function (req, callback) {
         mongoClient.connect(url, function (err, db) {
-            db.collection("users").updateOne({ "name": req.params.UserName }).req.body, function (err, result) {
+            db.collection("users").update({ "name": req.params.userName }, {
+                "$addToSet": { "ratings": req.body }
+            }, function (err, result) {
                 if (err) {
                     callback({
-                        status: 'fail',
+                        status: 'Fail',
                         message: 'Posted review and rating failed'
                     });
                 } else {
@@ -45,7 +47,7 @@ module.exports = {
                     });
                 }
                 db.close();
-            }
+            });
         });
     }
 }
